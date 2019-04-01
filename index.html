@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<title>Sandwich Clicker</title>
+	</head>
+	<body>
+		<h1>Sandwich Clicker</h1>
+		<hr>
+		<p id="text_sand">Sand: 0</p>
+		<p id="text_sandwiches" style="display:none">Sandwiches: 0</p>
+		<button onclick="getSand()">Get sand</button>
+		<hr>
+		<button id="button_sandwich" onclick="makeSandwich()">Make 1 sandwich (1 sand)</button>
+		<div id="div_witch" style="display:none">
+			<hr>
+			<p>The Sand Witch</p>
+			<button onclick="spell('sand')">Spell of Undersanding (5 sandwiches) (Resets sand requirements back to the beginning)</button>
+			<button id="button_spell_sandwich" onclick="spell('sandwich')">Spell of Sandwiching (10 sandwiches) (Increases the amount of sandwiches made by +1)</button>
+		</div>
+	</body>
+</html>
+
+<script>
+	var sand = 0;
+	var sandwiches = 0;
+	var sandwichesPer = 1;
+	
+	var sandwichSpellCost = 10;
+	var sandwichCostA = 0;
+	var sandwichCostB = 1;
+	var sandwichCost = 1;
+	
+	function getSand() {
+		sand += 1;
+		updateSand();
+	}
+	
+	function updateSand() {
+		if (document.getElementById("div_witch").style.display == "none") {
+			if (sandwiches >= 10) {
+				document.getElementById("div_witch").style.display = "block";
+			}
+		}
+		document.getElementById("text_sand").innerHTML = "Sand: " + sand;
+		document.getElementById("text_sandwiches").innerHTML = "Sandwiches: " + sandwiches;
+		if (sandwichesPer == 1) {
+			document.getElementById("button_sandwich").innerHTML = "Make 1 sandwich (" + sandwichCost + " sand)";
+		} else {
+			document.getElementById("button_sandwich").innerHTML = "Make " + sandwichesPer + " sandwiches (" + sandwichCost + " sand)";
+		}
+		document.getElementById("button_spell_sandwich").innerHTML = "Spell of Sandwiching (" + sandwichSpellCost + " sandwiches) (Increases the amount of sandwiches made by +1)";
+	}
+	
+	function makeSandwich() {
+		if (sand >= sandwichCost) {
+			sand -= sandwichCost;
+			sandwiches += sandwichesPer;
+			sandwichCostA = sandwichCostB;
+			sandwichCostB = sandwichCost;
+			sandwichCost = sandwichCostA + sandwichCostB;
+			document.getElementById("text_sandwiches").style.display = "block";
+			updateSand();
+		}
+	}
+
+	function spell(which) {
+		if (which == "sand") {
+			if (sandwiches >= 5) {
+				sandwiches -= 5;
+				sandwichCostA = 0;
+				sandwichCostB = 1;
+				sandwichCost = 1;
+				updateSand();
+			}
+		} else if (which == "sandwich") {
+			if (sandwiches >= sandwichSpellCost) {
+				sandwiches -= sandwichSpellCost;
+				sandwichSpellCost += 10;
+				sandwichesPer += 1;
+				updateSand();
+			}
+		}
+	}
+</script>
