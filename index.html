@@ -126,7 +126,7 @@
 		} else if (which == "calming") {
 			if (sandwiches >= 1000) {
 				sandwiches -= 1000;
-				sandstormReq *= 0.8;
+				sandstormReq = Math.ceil(sandstormReq * 0.8);
 				document.getElementById("button_sandstorm").innerHTML = "Throw " + sandstormReq + " sand into the sandstorm (+1 artifact)";
 				updateSand();
 			}
