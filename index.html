@@ -18,6 +18,20 @@
 			<button id="button_spell_oversand" onclick="spell('oversand')">Spell of Oversanding (10 sandwiches) (Increases sand obtained from clicking by +1)</button>
 			<br>
 			<button id="button_spell_sandwich" onclick="spell('sandwich')">Spell of Sandwiching (10 sandwiches) (Increases the amount of sandwiches made by +1)</button>
+			<div id="div_witch_artifacts" style="display:none">
+				<br>
+				<button onclick="spell('calming')">Spell of Calming (1000 sandwiches) (Reduces the amount of sand needed in sandstorm by 20%)</button>
+				<br>
+				<button id="button_blessing_sand" onclick="blessing('sand')">Sand Blessing (1 artifact) (Dramatically increases the amount of sand given per click)</button>
+				<br>
+				<button id="button_blessing_sandwich" onclick="blessing('sandwich')">Sandwich Blessing (1 artifact) (Dramatically increases the amount of sandwiches made)</button>
+			</div>
+		</div>
+		<div id="div_sandstorm" style="display:none">
+			<hr>
+			<p>SANDSTORM</p>
+			<button id="button_sandstorm" onclick="sandstorm()">Throw 1000 sand into the sandstorm</button>
+			<p id="text_sandstorm_artifacts" style="display:none"></p>
 		</div>
 	</body>
 </html>
@@ -27,15 +41,26 @@
 	var sandwiches = 0;
 	var sandwichesPer = 1;
 	var sandPerClick = 1;
+	var artifacts = 0;
+	
+	var sandBlessingLevel = 1;
+	var sandwichBlessingLevel = 1;
 	
 	var sandwichSpellCost = 10;
 	var oversandSpellCost = 10;
 	var sandwichCostA = 0;
 	var sandwichCostB = 1;
 	var sandwichCost = 1;
+	var sandstormReq = 1000;
+	var sandBlessingCostA = 0;
+	var sandBlessingCostB = 1;
+	var sandBlessingCost = 1;
+	var sandwichBlessingCostA = 0;
+	var sandwichBlessingCostB = 1;
+	var sandwichBlessingCost = 1;
 	
 	function getSand() {
-		sand += sandPerClick;
+		sand += (sandPerClick * sandBlessingLevel);
 		updateSand();
 	}
 	
@@ -45,13 +70,19 @@
 				document.getElementById("div_witch").style.display = "block";
 			}
 		}
+		if (document.getElementById("div_sandstorm").style.display == "none") {
+			if (sandPerClick >= 8) {
+				document.getElementById("div_sandstorm").style.display = "block";
+			}
+		}
 		document.getElementById("text_sand").innerHTML = "Sand: " + sand;
-		document.getElementById("button_sand").innerHTML = "Get " + sandPerClick + " sand";
+		document.getElementById("button_sand").innerHTML = "Get " + (sandPerClick * sandBlessingLevel) + " sand";
 		document.getElementById("text_sandwiches").innerHTML = "Sandwiches: " + sandwiches;
+		document.getElementById("text_sandstorm_artifacts").innerHTML = "Artifacts: " + artifacts;
 		if (sandwichesPer == 1) {
 			document.getElementById("button_sandwich").innerHTML = "Make 1 sandwich (" + sandwichCost + " sand)";
 		} else {
-			document.getElementById("button_sandwich").innerHTML = "Make " + sandwichesPer + " sandwiches (" + sandwichCost + " sand)";
+			document.getElementById("button_sandwich").innerHTML = "Make " + (sandwichesPer * sandwichBlessingLevel) + " sandwiches (" + sandwichCost + " sand)";
 		}
 		document.getElementById("button_spell_oversand").innerHTML = "Spell of Oversanding (" + oversandSpellCost + " sandwiches) (Increases sand obtained from clicking by +1)";
 		document.getElementById("button_spell_sandwich").innerHTML = "Spell of Sandwiching (" + sandwichSpellCost + " sandwiches) (Increases the amount of sandwiches made by +1)";
@@ -60,7 +91,7 @@
 	function makeSandwich() {
 		if (sand >= sandwichCost) {
 			sand -= sandwichCost;
-			sandwiches += sandwichesPer;
+			sandwiches += (sandwichesPer * sandwichBlessingLevel);
 			sandwichCostA = sandwichCostB;
 			sandwichCostB = sandwichCost;
 			sandwichCost = sandwichCostA + sandwichCostB;
@@ -90,6 +121,49 @@
 				sandwiches -= oversandSpellCost;
 				oversandSpellCost *= 2;
 				sandPerClick += 1;
+				updateSand();
+			}
+		} else if (which == "calming") {
+			if (sandwiches >= 1000) {
+				sandwiches -= 1000;
+				sandstormReq *= 0.8;
+				document.getElementById("button_sandstorm").innerHTML = "Throw " + sandstormReq + " sand into the sandstorm (+1 artifact)";
+				updateSand();
+			}
+		}
+	}
+	
+	function sandstorm() {
+		if (sand >= sandstormReq) {
+			sand -= sandstormReq;
+			sandstormReq *= 2;
+			artifacts += 1;
+			document.getElementById("button_sandstorm").innerHTML = "Throw " + sandstormReq + " sand into the sandstorm (+1 artifact)";
+			document.getElementById("text_sandstorm_artifacts").style.display = "block";
+			document.getElementById("div_witch_artifacts").style.display = "block";
+			updateSand();
+		}
+	}
+	
+	function blessing(which) {
+		if (which == "sand") {
+			if (artifacts >= sandBlessingCost) {
+				artifacts -= sandBlessingCost;
+				sandBlessingLevel += 1;
+				sandBlessingCostA = sandBlessingCostB;
+				sandBlessingCostB = sandBlessingCost;
+				sandBlessingCost = sandBlessingCostA + sandBlessingCostB;
+				document.getElementById("button_blessing_sand").innerHTML = "Sand Blessing (" + sandBlessingCost + " artifacts) (Dramatically increases the amount of sand given per click)";
+				updateSand();
+			}
+		} else if (which == "sandwich") {
+			if (artifacts >= sandwichBlessingCost) {
+				artifacts -= sandwichBlessingCost;
+				sandwichBlessingLevel += 1;
+				sandwichBlessingCostA = sandwichBlessingCostB;
+				sandwichBlessingCostB = sandwichBlessingCost;
+				sandwichBlessingCost = sandwichBlessingCostA + sandwichBlessingCostB;
+				document.getElementById("button_blessing_sandwich").innerHTML = "Sandwich Blessing (" + sandwichBlessingCost + " artifacts) (Dramatically increases the amount of sandwiches made)";
 				updateSand();
 			}
 		}
